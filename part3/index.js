@@ -34,9 +34,6 @@ let persons = [
     }
 ]
 
-
-
-
 app.get('/',(request,response) => {
     response.send('<h1>Welcome!!</h1>')
 })
