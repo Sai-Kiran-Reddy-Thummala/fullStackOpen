@@ -62,6 +62,8 @@ const App = () => {
                     setPersons(persons.concat(response))
                     setNewName('')
                     setNewNumber('')
+                  }).catch( error => {
+                      setMessage(`name or number is missing.`)
                   })
     }
   }
