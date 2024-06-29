@@ -76,7 +76,7 @@ app.get('/api/persons/:id', (request, response, next) => {
           .catch(error => next(error) )
 })
 
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response,next) => {
     Person.findByIdAndDelete(request.params.id)
                 .then(returnedPerson => {
                   response.status(204).end()
@@ -92,11 +92,11 @@ const generateId = () => {
 }
 */
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
     const tempPerson = request.body
 
     if(tempPerson.name === undefined) {
-      response.status(400).json({error : "Name or number is missing"})
+      return response.status(400).json({error : "Name is missing"})
     }else {
       const person = new Person({
         name : tempPerson.name,
@@ -107,6 +107,7 @@ app.post('/api/persons', (request, response) => {
         console.log("Person saved to the database")
         response.json(savedPerson)
       })
+      .catch(error => next(error))
     }
 })
 
