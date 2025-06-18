@@ -85,9 +85,10 @@ const App = () => {
 
     personServices
     .create(newPerson)
-    .then(returnedPerson => {
-      setPersons(persons.concat(returnedPerson))
-      setMessage(`${returnedPerson.name} has been added to phonebook`)
+    .then(returnedPersons => {
+      //setPersons(persons.concat(returnedPerson))
+      setPersons(returnedPersons)
+      setMessage(`${newName} has been added to phonebook`)
       setTimeout(() => {
           setMessage(null)
         }, 5000)
@@ -96,7 +97,7 @@ const App = () => {
     })
     .catch(error => {
     console.log(error)
-    setMessage(`Failed to add ${newPerson.name}: ${error.message}`)
+    setMessage(`Failed to add ${newName}: ${error.message}`)
     setTimeout(() => {
           setMessage(null)
         }, 5000)

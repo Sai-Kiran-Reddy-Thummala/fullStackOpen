@@ -23,10 +23,13 @@ let persons = [
 
 const express = require('express')
 const morgan = require('morgan')
+const cors = require('cors')
 
 const app = express()
 
+app.use(cors())
 app.use(express.json())
+
 
 // app.use(
 // morgan(function (tokens,request,response) {
@@ -116,6 +119,12 @@ app.post('/api/persons', (request,response) => {
     persons = persons.concat(person)
     response.json(persons)
 })
+
+const unknownEndpoint = (request, response) => {
+   response.status(404).send({error : 'Resource does not exist'})
+}
+
+app.use(unknownEndpoint)
 
 const PORT = 3001
 
