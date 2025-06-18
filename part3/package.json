@@ -9,7 +9,9 @@
   "scripts": {
     "start": "node index.js",
     "dev": "node --watch index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:ui": "@powershell Remove-Item -Recurse -Force dist && cd ../part2/phoneBook && npm run build && @powershell Copy-Item dist -Recurse ../../part3",
+    "deploy-full": "@powershell npm run build:ui && git add . && git commit -m uibuild && git push -u origin main"
   },
   "dependencies": {
     "cors": "^2.8.5",
