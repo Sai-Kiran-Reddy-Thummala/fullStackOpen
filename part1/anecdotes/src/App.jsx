@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 import { useState } from "react"
 
@@ -50,6 +51,13 @@ const Button = (props) => {
 const App = () => {
   const [selected, setSelected] = useState(0)
   const [votes,setVotes] = useState(Array(8).fill(0))
+=======
+import { useState } from 'react'
+
+const Button = ({onClick,text}) => <><button onClick={onClick}>{text}</button></>
+
+const App = () => {
+>>>>>>> 63df426 (updated code)
   const anecdotes = [
     'If it hurts, do it more often.',
     'Adding manpower to a late software project makes it later!',
@@ -60,6 +68,7 @@ const App = () => {
     'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.',
     'The only way to go fast, is to go well.'
   ]
+<<<<<<< HEAD
 
   console.log(votes)
 
@@ -88,6 +97,37 @@ const App = () => {
       <Display votes={votes} anecdotes={anecdotes}></Display>
     </div>
   ) 
+=======
+   
+  const [selected, setSelected] = useState(0)
+  const [votes, setVotes] = useState(new Array(anecdotes.length).fill(0));
+  
+  console.log('votes', votes);
+
+  const handleSelect = () => {
+    const random = Math.floor(Math.random() * anecdotes.length);
+    setSelected(random);
+  }
+
+  const mostVotes = () => votes.indexOf(Math.max(...votes));
+
+  const handleVotes = () => {
+    const newVotes = [...votes]
+    newVotes[selected] += 1 
+    setVotes(newVotes)
+  }
+
+  return (
+    <div>
+      <h1>Anecdote of the day</h1>
+      <p>{anecdotes[selected]} has {votes[selected]} votes</p>
+      <Button onClick={handleSelect} text='new Anecdote'></Button>
+      <Button onClick={handleVotes} text='vote'></Button>
+      <h1>Anecdote with most votes</h1>
+      <p>{anecdotes[mostVotes()]} has most votes i.e {votes[mostVotes()]}</p>
+    </div>
+  )
+>>>>>>> 63df426 (updated code)
 }
 
 export default App
