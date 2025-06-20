@@ -96,8 +96,9 @@ const App = () => {
       setNewNumber('')
     })
     .catch(error => {
-    console.log(error)
-    setMessage(`Failed to add ${newName}: ${error.message}`)
+    const errorMsg = error.response?.data?.error || 'An unexpected error occurred'
+    console.error(errorMsg)
+    setMessage(errorMsg)
     setTimeout(() => {
           setMessage(null)
         }, 5000)
