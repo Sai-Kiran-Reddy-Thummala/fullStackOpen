@@ -71,7 +71,7 @@ app.get('/info',(request,response) => {
     
 })
 
-app.get('/api/persons/:id',(request,response) => {
+app.get('/api/persons/:id',(request,response,next) => {
 
     Person.findById(request.params.id).then(person => {
       if(person){
@@ -92,7 +92,7 @@ app.get('/api/persons/:id',(request,response) => {
     // }
 })
 
-app.delete('/api/persons/:id',(request,response) => {
+app.delete('/api/persons/:id',(request,response,next) => {
     Person.findByIdAndDelete(request.params.id).then(result => {
       response.status(204).end()
     })
@@ -106,7 +106,7 @@ app.delete('/api/persons/:id',(request,response) => {
 
 // const isNameUnique = name => !persons.find(p => p.name === name)
 
-app.post('/api/persons', (request,response) => {
+app.post('/api/persons', (request,response,next) => {
   
   const name = request.body.name
   const number = request.body.number
@@ -129,9 +129,12 @@ app.post('/api/persons', (request,response) => {
     number: request.body.number
   })
 
-  newPerson.save().then(returnedObject => {
+  newPerson
+  .save()
+  .then(returnedObject => {
     response.json(returnedObject)
   })
+  .catch(error => next(error))
   
   // if (!isNameUnique(name)) {
   //   return response.status(400)
@@ -148,20 +151,23 @@ app.post('/api/persons', (request,response) => {
   //   response.json(persons)
 })
 
-app.put('/api/persons/:id',(request,response) => {
+app.put('/api/persons/:id',(request,response,next) => {
     const {name, number} = request.body
 
-    Person.findById(request.params.id).then(returnedPerson => {
+    const updateData = {}
+    
+    if( number != undefined){
+      updateData.number = number
+    }
 
-      if(!returnedPerson){
-        response.status(404).end()
+    Person.findByIdAndUpdate(request.params.id,updateData,{
+      new: true,
+      runValidators: true
+    }).then(updatedPerson => {
+      if(!updatedPerson){
+        response.status(400).end()
       }
-
-      returnedPerson.number = number;
-
-      returnedPerson.save().then(updatedPerson => {
-        response.json(updatedPerson)
-      })
+      response.json(updatedPerson)
     })
     .catch(error => next(error))
 })
@@ -177,6 +183,8 @@ const errorHandler = (error,request,response,next) => {
 
   if(error.name === "CastError"){
     return response.status(404).send({error: 'malformatted id'})
+  }else if(error.name === "ValidationError"){
+    return response.status(400).json({error : error.message})
   }
 
   next(error)
