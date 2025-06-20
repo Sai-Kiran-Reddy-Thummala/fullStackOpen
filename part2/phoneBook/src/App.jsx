@@ -85,9 +85,9 @@ const App = () => {
 
     personServices
     .create(newPerson)
-    .then(returnedPersons => {
+    .then(returnedPerson => {
       //setPersons(persons.concat(returnedPerson))
-      setPersons(returnedPersons)
+      setPersons(persons.concat(returnedPerson))
       setMessage(`${newName} has been added to phonebook`)
       setTimeout(() => {
           setMessage(null)
