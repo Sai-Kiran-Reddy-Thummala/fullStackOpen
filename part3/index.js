@@ -1,36 +1,41 @@
-let persons = [
-    { 
-      "id": "1",
-      "name": "Arto Hellas", 
-      "number": "040-123456"
-    },
-    { 
-      "id": "2",
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523"
-    },
-    { 
-      "id": "3",
-      "name": "Dan Abramov", 
-      "number": "12-43-234345"
-    },
-    { 
-      "id": "4",
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122"
-    }
-]
+// let persons = [
+//     { 
+//       "id": "1",
+//       "name": "Arto Hellas", 
+//       "number": "040-123456"
+//     },
+//     { 
+//       "id": "2",
+//       "name": "Ada Lovelace", 
+//       "number": "39-44-5323523"
+//     },
+//     { 
+//       "id": "3",
+//       "name": "Dan Abramov", 
+//       "number": "12-43-234345"
+//     },
+//     { 
+//       "id": "4",
+//       "name": "Mary Poppendieck", 
+//       "number": "39-23-6423122"
+//     }
+// ]
 
-const express = require('express')
-const morgan = require('morgan')
+require('dotenv').config()              //imports dotenv and will be available throughout the code
+const express = require('express')      // imports express
+const morgan = require('morgan')        // imports morgan middleware
+const Note = require('./models/person') // imports person model from person file in modes folder/dir
+
 //const cors = require('cors')
+//app.use(cors())
 
 const app = express()
 
 app.use(express.static('dist'))
-//app.use(cors())
 app.use(express.json())
 
+morgan.token('postBody', function(request,response) { return JSON.stringify(request.body) })
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :postBody'));
 
 // app.use(
 // morgan(function (tokens,request,response) {
@@ -41,16 +46,14 @@ app.use(express.json())
 //   ].join(' ')
 // }))
 
-morgan.token('postBody', function(request,response) { return JSON.stringify(request.body) })
-
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms :postBody'));
-
 app.get('/',(request,response) => {
     response.send("<h1>Hello World!!</h1>")
 })
 
 app.get('/api/persons',(request,response) => {
-    response.json(persons)
+    Note.find({}).then(result => {
+      response.json(result)
+    })
 })
 
 app.get('/info',(request,response) => {
@@ -60,19 +63,23 @@ app.get('/info',(request,response) => {
         <p>${new Date()}</p>
     </div>
     `
-
     response.send(info)
 })
 
 app.get('/api/persons/:id',(request,response) => {
-    const id = request.params.id
-    const person = persons.find(p => p.id === id)
 
-    if(person){
+    Note.findById(request.params.id).then(person => {
       response.json(person)
-    }else {
-    response.status(404).send({"error":"Resource not found"})
-    }
+    })
+
+    // const id = request.params.id
+    // const person = persons.find(p => p.id === id)
+
+    // if(person){
+    //   response.json(person)
+    // }else {
+    // response.status(404).send({"error":"Resource not found"})
+    // }
 })
 
 app.delete('/api/persons/:id',(request,response) => {
@@ -90,39 +97,48 @@ const isNameUnique = name => !persons.find(p => p.name === name)
 
 app.post('/api/persons', (request,response) => {
   
-  const name = request.body.name
-  const number = request.body.number
+  // const name = request.body.name
+  // const number = request.body.number
   
-  if(!name && !number){
-    return response.status(400)
-                    .send({"error":"name and number is missing"})
-  }
-  if(!name){
-    return response.status(400)
-                    .send({"error":"name is missing"})
-  }
-  if(!number){
-    return response.status(400)
-                    .send({"error":"number is missing"})
-  }
+  // if(!name && !number){
+  //   return response.status(400)
+  //                   .send({"error":"name and number is missing"})
+  // }
+  // if(!name){
+  //   return response.status(400)
+  //                   .send({"error":"name is missing"})
+  // }
+  // if(!number){
+  //   return response.status(400)
+  //                   .send({"error":"number is missing"})
+  // }
 
-  if (!isNameUnique(name)) {
-    return response.status(400)
-                    .send({ error: "name must be unique" });
-  }
+  const newPerson = new Note({
+    name: request.body.name,
+    number: request.body.number
+  })
 
-  const person = {
-    name,
-    number,
-    "id" : generateId()
-  }
+  newPerson.save().then(returnedObject => {
+    response.json(returnedObject)
+  })
+  
+  // if (!isNameUnique(name)) {
+  //   return response.status(400)
+  //                   .send({ error: "name must be unique" });
+  // }
 
-    persons = persons.concat(person)
-    response.json(persons)
+  // const person = {
+  //   name,
+  //   number,
+  //   "id" : generateId()
+  // }
+
+  //   persons = persons.concat(person)
+  //   response.json(persons)
 })
 
 const unknownEndpoint = (request, response) => {
-   response.status(404).send({error : 'Resource does not exist'})
+   response.status(404).send({error : 'Unknown Endpoint'})
 }
 
 app.use(unknownEndpoint)
