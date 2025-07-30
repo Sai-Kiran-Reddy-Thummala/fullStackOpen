@@ -27,7 +27,8 @@ const Blog = ({ blog,
         <div className='blog-details'>
           {blog.title} <button onClick={() => setView(false)}>Hide</button>
           <div>{blog.url}</div>
-          <div>likes: {blog.likes} <button onClick={toggleLikes}>Like</button></div>
+          <div>likes: {blog.likes} <button data-testid='like'
+            onClick={toggleLikes}>Like</button></div>
           <div>{blog.author}</div>
           {isCreator && (
             <button onClick={handleDelete}>remove</button>
