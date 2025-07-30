@@ -15,16 +15,21 @@ const url = config.MONGODB_URI
 logger.info('connecting to', url)
 
 mongoose.connect(url)
-        .then(result => {
-            logger.info('connected to mongodb')
-        })
-        .catch(error => {
-            logger.error(error.message)
-        })
+    .then(result => {
+        logger.info('connected to mongodb')
+    })
+    .catch(error => {
+        logger.error(error.message)
+    })
 
 app.use(express.json())
 app.use(middleware.morganMiddleware)
 app.use(middleware.tokenExtractor)
+
+if (process.env.NODE_ENV === "test") {
+    const testingRouter = require('./controllers/testing')
+    app.use('/api/testing', testingRouter)
+}
 
 app.use('/api/blogs', blogsRouter)
 app.use('/api/users', userRouter)

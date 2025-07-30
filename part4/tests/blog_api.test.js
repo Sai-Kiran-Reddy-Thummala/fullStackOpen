@@ -20,7 +20,7 @@ let savedUser = ''
 let token = ''
 
 describe('http://localhost:3003/api/blogs tests', () => {
-    
+
     beforeEach(async () => {
         await Blog.deleteMany()
         await User.deleteMany()
@@ -35,18 +35,18 @@ describe('http://localhost:3003/api/blogs tests', () => {
         })
 
         savedUser = await user.save()
-        token = jwt.sign({username: savedUser.username, id: savedUser._id}, process.env.SECRET)
+        token = jwt.sign({ username: savedUser.username, id: savedUser._id }, process.env.SECRET)
 
-        const blogObjects = blogHelper.initialBlogs.map(blog => new Blog({...blog, user: savedUser._id}))
+        const blogObjects = blogHelper.initialBlogs.map(blog => new Blog({ ...blog, user: savedUser._id }))
         const blogPromises = blogObjects.map(blog => blog.save())
         await Promise.all(blogPromises)
     })
 
     test('blogs returned from http://localhost:3003/api/blogs', async () => {
         const blogs = await api
-        .get('/api/blogs')
-        .expect(200)
-        .expect('Content-Type', /application\/json/)
+            .get('/api/blogs')
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
 
         const blogsInDB = await blogHelper.blogsInDb()
         assert.strictEqual(blogs.body.length, blogsInDB.length)
@@ -55,14 +55,14 @@ describe('http://localhost:3003/api/blogs tests', () => {
     test('blogs returned from http://localhost:3003/api/blogs has property named `id`', async () => {
         const response = await api.get('/api/blogs')
         const blogs = response.body
-        for(const blog of blogs){
+        for (const blog of blogs) {
             assert.ok(blog.hasOwnProperty('id'))
         }
     })
 
     test('adding a blog to http://localhost:3003/api/blogs by token authentication', async () => {
 
-         const blog = {
+        const blog = {
             url: "https://example.com/javascript-basics",
             title: "JavaScript Basics",
             author: "John Doe",
@@ -70,18 +70,18 @@ describe('http://localhost:3003/api/blogs tests', () => {
         }
 
         await api
-        .post('/api/blogs')
-        .set('Authorization', `Bearer ${token}`) // Re-used token from beforeEach
-        .send(blog)
-        .expect(201)
-        .expect('Content-Type', /application\/json/)
+            .post('/api/blogs')
+            .set('Authorization', `Bearer ${token}`) // Re-used token from beforeEach
+            .send(blog)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
 
         const blogsAfter = await blogHelper.blogsInDb()
         assert.strictEqual(blogsAfter.length, blogHelper.initialBlogs.length + 1)
     })
 
     test('adding a blog fails at http://localhost:3003/api/blogs if token is not provided', async () => {
-        
+
         const blogsBefore = await blogHelper.blogsInDb()
 
         const blog = {
@@ -92,9 +92,9 @@ describe('http://localhost:3003/api/blogs tests', () => {
         }
 
         await api
-        .post('/api/blogs')
-        .send(blog)
-        .expect(401)
+            .post('/api/blogs')
+            .send(blog)
+            .expect(401)
 
         const blogsAfter = await blogHelper.blogsInDb()
         assert.strictEqual(blogsAfter.length, blogsBefore.length)
@@ -115,10 +115,10 @@ describe('http://localhost:3003/api/blogs tests', () => {
         }
 
         await api
-        .post('/api/blogs')
-        .set('Authorization', `Bearer ${token}`)
-        .send(blog)
-        .expect(401)
+            .post('/api/blogs')
+            .set('Authorization', `Bearer ${token}`)
+            .send(blog)
+            .expect(401)
 
         const blogsAfter = await blogHelper.blogsInDb()
         assert.strictEqual(blogsAfter.length, blogsBefore.length)
@@ -128,17 +128,17 @@ describe('http://localhost:3003/api/blogs tests', () => {
     test('adding a blog fails at http://localhost:3003/api/blogs if title or url is missing', async () => {
 
         const blogsBefore = await blogHelper.blogsInDb()
-        
+
         const incompleteBlog = {
             author: 'Sai Kiran Reddy',
             likes: 24
         }
 
         const response = await api
-        .post('/api/blogs')
-        .set('Authorization', `Bearer ${token}`) // re-used token from beforeEach
-        .send(incompleteBlog)
-        .expect(400)
+            .post('/api/blogs')
+            .set('Authorization', `Bearer ${token}`) // re-used token from beforeEach
+            .send(incompleteBlog)
+            .expect(400)
 
         const blogsAfter = await blogHelper.blogsInDb()
         assert.strictEqual(blogsAfter.length, blogsBefore.length)
@@ -150,9 +150,9 @@ describe('http://localhost:3003/api/blogs tests', () => {
             const blogToDelete = blogsBefore[0]
 
             await api
-            .delete(`/api/blogs/${blogToDelete.id}`)
-            .set('Authorization',`Bearer ${token}`) // re-used token from beforeEach
-            .expect(204)
+                .delete(`/api/blogs/${blogToDelete.id}`)
+                .set('Authorization', `Bearer ${token}`) // re-used token from beforeEach
+                .expect(204)
 
             const blogsAfter = await blogHelper.blogsInDb()
             assert.strictEqual(blogsAfter.length, blogsBefore.length - 1)
@@ -169,12 +169,12 @@ describe('http://localhost:3003/api/blogs tests', () => {
             })
             const savedUser = await user.save()
 
-            const token = jwt.sign({username: savedUser.username, id: savedUser._id}, process.env.SECRET)
+            const token = jwt.sign({ username: savedUser.username, id: savedUser._id }, process.env.SECRET)
 
             await api
-            .delete(`/api/blogs/${blogToDelete.id}`)
-            .set('Authorization',`Bearer ${token}`)
-            .expect(401)
+                .delete(`/api/blogs/${blogToDelete.id}`)
+                .set('Authorization', `Bearer ${token}`)
+                .expect(401)
 
             const blogsAfter = await blogHelper.blogsInDb()
             assert.strictEqual(blogsAfter.length, blogsBefore.length)
@@ -185,8 +185,8 @@ describe('http://localhost:3003/api/blogs tests', () => {
             const blogToDelete = blogsBefore[0]
 
             await api
-            .delete(`/api/blogs/${blogToDelete.id}`)
-            .expect(401)
+                .delete(`/api/blogs/${blogToDelete.id}`)
+                .expect(401)
 
             const blogsAfter = await blogHelper.blogsInDb()
             assert.strictEqual(blogsAfter.length, blogsBefore.length)
@@ -206,10 +206,10 @@ describe('http://localhost:3003/api/blogs tests', () => {
             }
 
             await api
-            .put(`/api/blogs/${blogToUpdate.id}`)
-            .set('Authorization', `Bearer ${token}`)
-            .expect(200)
-            .expect('Content-Type', /application\/json/)
+                .put(`/api/blogs/${blogToUpdate.id}`)
+                .set('Authorization', `Bearer ${token}`)
+                .expect(200)
+                .expect('Content-Type', /application\/json/)
 
             const blogsAfter = await blogHelper.blogsInDb()
             assert.strictEqual(blogsAfter.length, blogsBefore.length)
@@ -234,12 +234,12 @@ describe('http://localhost:3003/api/blogs tests', () => {
             })
             const savedUser = await user.save()
 
-            const token = jwt.sign({username: savedUser.username, id: savedUser._id}, process.env.SECRET)
+            const token = jwt.sign({ username: savedUser.username, id: savedUser._id }, process.env.SECRET)
 
             const response = await api
-            .put(`/api/blogs/${blogToUpdate.id}`)
-            .set('Authorization', `Bearer ${token}`)
-            .expect(401)
+                .put(`/api/blogs/${blogToUpdate.id}`)
+                .set('Authorization', `Bearer ${token}`)
+                .expect(401)
 
             const blogsAfter = await blogHelper.blogsInDb()
             assert.strictEqual(blogsAfter.length, blogsBefore.length)
@@ -257,8 +257,8 @@ describe('http://localhost:3003/api/blogs tests', () => {
             }
 
             const response = await api
-            .put(`/api/blogs/${blogToUpdate.id}`)
-            .expect(401)
+                .put(`/api/blogs/${blogToUpdate.id}`)
+                .expect(401)
 
             const blogsAfter = await blogHelper.blogsInDb()
             assert.strictEqual(blogsAfter.length, blogsBefore.length)
@@ -266,7 +266,7 @@ describe('http://localhost:3003/api/blogs tests', () => {
 
         test('updating fails with 400 if invalid blog id is sent with the request', async () => {
             const blogsBefore = await blogHelper.blogsInDb()
-            const {nonExistingId, token, userId} = await blogHelper.nonExistingId()
+            const { nonExistingId, token, userId } = await blogHelper.nonExistingId()
 
             const updatedData = {
                 url: "https://overreacted.io/",
@@ -276,9 +276,9 @@ describe('http://localhost:3003/api/blogs tests', () => {
             }
 
             const response = await api
-            .put(`/api/blogs/${nonExistingId}`)
-            .set('Authorization', `Bearer ${token}`)
-            .expect(400)
+                .put(`/api/blogs/${nonExistingId}`)
+                .set('Authorization', `Bearer ${token}`)
+                .expect(400)
 
             const blogsAfter = await blogHelper.blogsInDb()
             assert.strictEqual(blogsAfter.length, blogsBefore.length)
