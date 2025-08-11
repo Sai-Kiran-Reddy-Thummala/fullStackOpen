@@ -89,7 +89,8 @@ const App = () => {
       ))
     } catch (error) {
       console.log(error)
-      setMessage('Something went wrong while liking the blog.')
+      //setMessage('Something went wrong while liking the blog.')
+      setMessage(error.body)
       setTimeout(() => setMessage(null), 5000)
     }
   }
