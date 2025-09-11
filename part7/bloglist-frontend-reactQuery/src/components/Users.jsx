@@ -1,0 +1,31 @@
+import { Table } from 'react-bootstrap'
+
+const Users = ({ users }) => {
+  return (
+    <>
+      <div>
+        <h2>Users</h2>
+        <Table striped>
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Blogs Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((user) => (
+              <tr key={user.id}>
+                <td>
+                  <a href={`/users/${user.id}`}>{user.name}</a>
+                </td>
+                <td>{user.blogs.length}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </div>
+    </>
+  )
+}
+
+export default Users
