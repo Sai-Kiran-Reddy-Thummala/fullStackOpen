@@ -1,0 +1,9 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+  "title": "Project restructured",
+  "author": "University of Helsinki",
+  "url": "fullStackOpen.com part4",
+  "likes": 1
+}
